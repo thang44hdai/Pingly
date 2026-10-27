@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_title">Pingly</string>
+    <string name="app_subtitle">Keep a small thought close.</string>
+    <string name="new_ping">New ping</string>
+    <string name="message_hint">What would you like to remember?</string>
+    <string name="add_ping">Add ping</string>
+    <string name="your_pings">Your pings</string>
+    <string name="empty_title">No pings yet</string>
+    <string name="empty_body">Add your first ping above.</string>
+    <string name="input_empty">Enter a message.</string>
+    <string name="input_too_long">Keep your ping within %1$d characters.</string>
+    <string name="save_failed">Could not save this ping. Try again.</string>
+    <string name="load_failed">Could not load pings.</string>
+    <string name="loading">Loading pings…</string>
+    <string name="retry">Retry</string>
+</resources>

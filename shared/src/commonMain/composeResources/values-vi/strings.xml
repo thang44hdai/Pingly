@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_title">Pingly</string>
+    <string name="app_subtitle">Giữ những điều nhỏ bạn muốn nhớ.</string>
+    <string name="new_ping">Ping mới</string>
+    <string name="message_hint">Bạn muốn ghi nhớ điều gì?</string>
+    <string name="add_ping">Thêm ping</string>
+    <string name="your_pings">Các ping của bạn</string>
+    <string name="empty_title">Chưa có ping nào</string>
+    <string name="empty_body">Thêm ping đầu tiên ở phía trên.</string>
+    <string name="input_empty">Hãy nhập nội dung.</string>
+    <string name="input_too_long">Ping chỉ được dài tối đa %1$d ký tự.</string>
+    <string name="save_failed">Không lưu được ping. Hãy thử lại.</string>
+    <string name="load_failed">Không tải được các ping.</string>
+    <string name="loading">Đang tải ping…</string>
+    <string name="retry">Thử lại</string>
+</resources>
