@@ -1,7 +1,8 @@
 # Pingly
 
-Kotlin Multiplatform starter with a shared Compose UI. Home is the first screen;
-it uses the Ping domain feature to create and display messages.
+Kotlin Multiplatform app with a shared Compose UI. Home implements the latest
+Google Stitch “Pingly - Home & Emotion Orb” design with a partner portrait,
+animated presence, mood insights, an emotion picker, Calendar, and Moments.
 Android uses `androidApp`; iOS uses the Xcode project in `iosApp`. Both call the
 shared `App` composable in `shared`.
 
@@ -17,21 +18,45 @@ shared `App` composable in `shared`.
 | DI | `shared/src/commonMain/.../di/Koin.kt` | Koin modules, Repository/UseCase/ViewModel bindings |
 | Hosts | `androidApp`, `iosApp`, `shared/src/iosMain` | Platform lifecycle and Compose entry points |
 
-Flow: `HomeScreen` → `HomeEvent` → `HomeViewModel` → Ping use case →
-`PingRepository` → `InMemoryPingRepository` → `StateFlow<HomeUiState>` → screen.
+Home currently runs entirely on local UI state: `HomeScreen` emits `HomeAction`
+to `HomeRoute`, which owns saveable emotion selection, navigation, settings,
+sent-orb history, and calendar notes. Tap or long-press the portrait to simulate
+sending an orb, or use the Hug Orb suggestion. The + button opens the Stitch emotion
+picker with eight effects, animated phone preview, an overlay toggle, and a 1–5 second
+duration slider. Its send button confirms a local preview and records the selected
+effect in Moments without closing the picker. Calendar supports month navigation,
+day selection, and adding notes. Settings control haptics and an in-app overlay
+preview; no system overlay or server delivery is performed. Partner telemetry
+and AI confidence are sample content. State survives UI recreation through
+`rememberSaveable`; it is not durable storage.
 
-Koin starts in `PinglyApplication` on Android and via the Swift-facing
-`initKoinIos()` call in `iOSApp.init()` on iOS. The
-`HomeRoute` retrieves its ViewModel with `koinViewModel()` and uses `MviScreen`
-to collect state with the screen lifecycle. The repository
-keeps data only in memory, so Pings disappear when the process ends. Replace the
-binding in `pingModule` with a persistent implementation when the product needs
-storage; retain the domain contract and shared presentation flow.
-The shared resources contain English and Vietnamese strings.
+The original Ping domain, in-memory repository, MVI base, and HomeViewModel remain
+available for later data integration. Koin starts in `PinglyApplication` on Android
+and via `initKoinIos()` in `iOSApp.init()` on iOS; the current Home route does not
+instantiate that ViewModel. Existing `commonTest` coverage concerns the original
+Ping/MVI flow. Shared resources include English and Vietnamese strings, bundled
+Plus Jakarta Sans, Material Symbols, and the portrait from Stitch. Asset licenses
+are listed in `shared/THIRD_PARTY_NOTICES.md`.
 
-`commonTest` covers validation, feed order, repository snapshots, DI wiring, and MVI state
-transitions. Build and runtime checks for Android and iOS remain necessary before
-claiming either app runs; this scaffold has not been built as part of its generation.
+Android debug assembly, iOS simulator Kotlin compilation, and core UI interactions
+on the Pixel 6a emulator have been verified. Running the full iOS app still requires
+Xcode and a simulator runtime.
+
+## Theme and language
+
+`ui/theme/PinglyColorSchemes.kt` is the source for semantic color tokens. Its dark
+palette matches the Stitch Luminous Intimacy design system; the light palette uses
+the same roles. Screens use `MaterialTheme.colorScheme`, while `PinglyTheme.effects`
+provides glass fills, optical highlights, image shading, and selected navigation
+colors. Keep color literals in the token file when adding components.
+
+Settings offers System / Light / Dark and System / English / Vietnamese. Changes
+apply immediately to Home, sheets, Calendar, Moments, feedback messages, and system
+bar appearance. Theme/language preferences are persisted using SharedPreferences
+on Android and NSUserDefaults on iOS. Home UI state stays outside the locale provider
+so changing language preserves the current tab, emotion, history, and open sheet.
+The native locale adapters follow the Compose Multiplatform resource environment
+approach: https://kotlinlang.org/docs/multiplatform/compose-resource-environment.html.
 
 ## Run and verify
 
