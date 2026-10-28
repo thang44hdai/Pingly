@@ -44,3 +44,48 @@ claiming either app runs; this scaffold has not been built as part of its genera
 The Gradle wrapper is executable in the repository so the Xcode build phase can
 invoke it. iOS verification requires a selected full Xcode installation and a
 compatible simulator runtime.
+
+## GitHub Actions: APK (IPA temporarily disabled)
+
+`.github/workflows/build.yml` runs automatically only on pushes to `master`
+(including merges into `master`), not on pull requests, tags, or other branches.
+Manual dispatch is available; the Android job also requires the `master` ref.
+Android runs shared tests and builds an installable **debug APK** on Ubuntu.
+The iOS job is temporarily disabled with `if: ${{ false }}` in the workflow.
+Remove that condition to resume IPA builds. When enabled, iOS archives the device
+app on macOS and packages an **unsigned IPA** by default.
+Download the files from **Actions > Build APK & IOS > run > Artifacts**;
+artifacts are retained for 14 days. An unsigned IPA must be signed before it can
+be installed on an iPhone. This workflow does not publish to either store.
+
+For APK builds, no repository secrets, signing keystore, or environment variables
+are needed. Commit and push the workflow to `master`. In GitHub **Settings >
+Actions > General**, ensure GitHub Actions and the actions used by this workflow
+are allowed (`actions/*`, `gradle/actions`, and `android-actions/setup-android`).
+The workflow needs only `contents: read`; no personal access token or write
+permission is required. GitHub-hosted Ubuntu runners provide the build machine.
+
+To export a signed IPA, configure **Settings > Secrets and variables > Actions**:
+
+| Type | Name | Value |
+|---|---|---|
+| Secret | `IOS_CERTIFICATE_BASE64` | Base64 of an Apple Distribution `.p12`, including its private key |
+| Secret | `IOS_CERTIFICATE_PASSWORD` | Password for that `.p12` |
+| Secret | `IOS_PROFILE_BASE64` | Base64 of the matching distribution `.mobileprovision` |
+| Variable | `IOS_TEAM_ID` | Apple Developer Team ID |
+| Variable | `IOS_BUNDLE_ID` | App ID matching the profile; defaults to `com.thangnq.pingly.Pingly` |
+| Variable | `IOS_EXPORT_METHOD` | `ad-hoc` (default) or `app-store`; must match the profile |
+
+On a Mac, use `base64 -i certificate.p12 | pbcopy` and
+`base64 -i profile.mobileprovision | pbcopy` to prepare the secrets.
+Select **Run workflow**, enable **signed_ios**, and run against a trusted branch.
+For ad hoc installation, the profile must include the receiving device's UDID.
+An App Store IPA is for upload to App Store Connect, not direct installation.
+Signing material is imported into a temporary keychain and removed after the build.
+See [GitHub's signing setup](https://docs.github.com/en/actions/how-tos/deploy/deploy-to-third-party-platforms/sign-xcode-applications)
+for exporting and storing the signing credentials.
+
+The iOS bundle ID is overridden only in CI, so it does not inherit the local
+`TEAM_ID` suffix. Android release signing and store uploads are not configured.
+The first hosted run must verify dependency availability and Xcode compatibility;
+the Windows development environment cannot execute the iOS archive/export steps.
